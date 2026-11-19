@@ -1,67 +1,106 @@
-# Notes App
+README · MD
+Notes App
 
-Simple full-stack note-taking app.
+A simple full-stack note-taking application. Users can sign up, log in, and create, view, edit and delete their own private notes. Every note is linked to the user who created it, and no user can access another user's notes.
 
-**Backend:** Node.js, Express (ES Modules), MongoDB + Mongoose, JWT, bcryptjs
-**Frontend:** React (Vite), Tailwind CSS, React Router, Axios
-
-## Folder structure
-
-```
+Live Demo
+Live App (Frontend): https://YOUR-FRONTEND-LINK.vercel.app
+Backend API: https://YOUR-BACKEND-LINK.vercel.app
+GitHub Repository: https://github.com/YOUR-USERNAME/YOUR-REPO-NAME
+Tech Stack
+Part Technologies
+Frontend React (Vite), Tailwind CSS, React Router, Axios
+Backend Node.js, Express (ES Modules), JWT, bcryptjs, CORS, dotenv
+Database MongoDB Atlas with Mongoose
+Deployment Vercel (frontend and backend), GitHub
+Features
+User sign up and login with JWT authentication
+Passwords are hashed with bcrypt
+Notes are accessible only to logged-in users
+Each note is linked to its owner (user field in the Note model)
+Create, view, edit and delete notes
+A user cannot read, edit or delete another user's notes
+API validation and proper error responses (400, 401, 404, 500)
+Responsive UI built with Tailwind CSS (mobile, tablet, desktop)
+Folder Structure
 notes-app/
 ├── backend/
-│   ├── config/         db.js
-│   ├── controllers/    authController.js, noteController.js
-│   ├── middleware/     authMiddleware.js, errorMiddleware.js
-│   ├── models/         User.js, Note.js
-│   ├── routes/         authRoutes.js, noteRoutes.js
-│   ├── app.js
-│   └── server.js
+│ ├── config/ db.js
+│ ├── controllers/ authController.js, noteController.js
+│ ├── middleware/ authMiddleware.js, errorMiddleware.js
+│ ├── models/ User.js, Note.js
+│ ├── routes/ authRoutes.js, noteRoutes.js
+│ ├── app.js
+│ └── server.js
 └── frontend/
-    └── src/
-        ├── components/ Navbar.jsx, NoteCard.jsx
-        ├── pages/      Login.jsx, Signup.jsx, Dashboard.jsx
-        ├── api.js      axios setup
-        ├── App.jsx     routes
-        └── main.jsx
-```
+└── src/
+├── components/ Navbar.jsx, NoteCard.jsx, AuthModal.jsx
+├── pages/ Home.jsx, Dashboard.jsx
+├── api.js Axios setup
+├── App.jsx Routes
+└── main.jsx
+Setup Instructions (Run Locally)
+Prerequisites
+Node.js 18 or higher
+Git
+A MongoDB Atlas account (free tier) or a local MongoDB
 
-## How to run
+1. Clone the repository
+   bash
+   git clone https://github.com/YOUR-USERNAME/YOUR-REPO-NAME.git
+   cd YOUR-REPO-NAME
+2. Set up the backend
+   bash
+   cd backend
+   npm install
 
-MongoDB chalna chahiye (local ya Atlas).
+Create a .env file inside the backend folder (you can copy .env.example):
 
-```bash
-# backend
-cd backend
-npm install
-# .env mein MONGO_URI aur JWT_SECRET check kar lo
-npm run dev          # http://localhost:5000
+PORT=5000
+MONGO_URI=mongodb+srv://USERNAME:PASSWORD@cluster0.xxxxx.mongodb.net/notes-app?retryWrites=true&w=majority
+JWT_SECRET=any_long_random_string
 
-# frontend (naye terminal mein)
+Start the backend:
+
+bash
+npm run dev
+
+You should see MongoDB connected in the terminal. The API runs on http://localhost:5000.
+
+3. Set up the frontend
+
+Open a new terminal:
+
+bash
 cd frontend
 npm install
-npm run dev          # http://localhost:5173
-```
+npm run dev
 
-## API
+The app runs on http://localhost:5173. In development, Vite proxies /api requests to the backend on port 5000, so no extra configuration is needed.
 
-| Method | URL               | Login? | Kaam                |
-|--------|-------------------|--------|---------------------|
-| POST   | /api/auth/signup  | No     | Naya account        |
-| POST   | /api/auth/login   | No     | Login, token milta  |
-| GET    | /api/notes        | Yes    | Apne saare notes    |
-| POST   | /api/notes        | Yes    | Note create         |
-| GET    | /api/notes/:id    | Yes    | Ek note             |
-| PUT    | /api/notes/:id    | Yes    | Note edit           |
-| DELETE | /api/notes/:id    | Yes    | Note delete         |
+Environment Variables
+Variable Where Description
+PORT backend Server port (default 5000)
+MONGO_URI backend MongoDB connection string
+JWT_SECRET backend Secret key used to sign JWT tokens
+VITE_API_URL frontend (production only) Backend URL ending with /api, e.g. https://your-backend.vercel.app/api
+API Endpoints
+Method Endpoint Auth required Description
+POST /api/auth/signup No Create a new account
+POST /api/auth/login No Log in and receive a JWT token
+GET /api/notes Yes Get all notes of the logged-in user
+POST /api/notes Yes Create a note
+GET /api/notes/:id Yes Get one note
+PUT /api/notes/:id Yes Update a note
+DELETE /api/notes/:id Yes Delete a note
 
-Token header mein bhejna hai: `Authorization: Bearer <token>`
+Protected routes need the header Authorization: Bearer <token>.
 
-## Requirements kaise pure hue
-
-- Signup/Login: password bcrypt se hash hota hai, login pe JWT token milta hai
-- Notes sirf logged in user ko: `protect` middleware saare note routes pe laga hai
-- Har note user se linked: `Note` model mein `user` field hai
-- Dusre ke notes access nahi: har query mein `user: req.user._id` filter hai, toh dusre ka note 404 aata hai
-- Validation + error handling: controllers mein checks hain aur sahi status codes ke saath JSON message aata hai
-- UI: Tailwind CSS, mobile/tablet/desktop pe responsive
+How Security and Ownership Work
+The protect middleware verifies the JWT on every /api/notes route.
+Every note query includes user: req.user.\_id, so a user can only work with their own notes. A note that belongs to someone else returns 404 Note not found.
+Login errors use one generic message ("Invalid email or password") so that registered emails are not revealed.
+Deployment
+Database: MongoDB Atlas (Network Access allows 0.0.0.0/0)
+Backend: Vercel project with Root Directory backend, environment variables MONGO_URI and JWT_SECRET
+Frontend: Vercel project with Root Directory frontend, environment variable VITE_API_URL
